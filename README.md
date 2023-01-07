@@ -1,0 +1,2 @@
+# python_common_libs
+python開発用の共通ライブラリの研究開発用
