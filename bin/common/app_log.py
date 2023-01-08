@@ -12,8 +12,7 @@
 #   * 
 #-------------------------------------------
 
-import datetime
-import functool
+import functools
 import logging
 
 def entry_log(prog_name:str):
@@ -27,28 +26,27 @@ def entry_log(prog_name:str):
     Args:
         prog_name (str): コードの論理名。
     """
+    def _entry_log(func):
 
-def _entry_log(func):
-
-    @functool.wraps(fun)
-    def _wrapper(*args, **keywords):
-        
-        logger = getLogger()
-
-        try:
+        @functools.wraps(func)
+        def _wrapper(*args, **keywords):
             
-            logger.info(f'***** {prog_name} > 開始 *****')
+            logger = logging.getLogger(prog_name)
 
-            result = func(*args, **keywords)
+            try:
+                logger.info(f'***** {prog_name} > 開始 *****')
 
-        finally:
+                result = func(*args, **keywords)
 
-            logger.info(f'***** {prog_name} > 終了 *****')
-            
-        return result
+            finally:
 
-    return _wrapper
+                logger.info(f'***** {prog_name} > 終了 *****')
+                
+            return result
 
+        return _wrapper
+
+    return _entry_log
 
 def exec_log(func_name: str):
     """メソッド/関数での実行ログ
@@ -62,17 +60,19 @@ def exec_log(func_name: str):
         func_name (str): コードの論理名。
     """
 
-    def _entry_log(func):
+    def _exec_log(func):
 
-        @functool.wraps(fun)
+        @functools.wraps(func)
         def _wrapper(*args, **keywords):
             
-            logger = getLogger()
+            logger = logging.getLogger(func_name)
 
-            logger.info(f'***** {prog_name} - 開始 *****')
+            logger.info(f'***** {func_name} - 開始 *****')
             result = func(*args, **keywords)
-            logger.info(f'***** {prog_name} - 終了 *****')
+            logger.info(f'***** {func_name} - 終了 *****')
             
             return result
 
         return _wrapper
+
+    return _exec_log

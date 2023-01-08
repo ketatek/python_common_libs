@@ -9,16 +9,16 @@ from pprint import pprint
 import utils
 
 class AppSettings():
-"""
-# 設定ファイル(toml)の取扱クラス
+    """
+    # 設定ファイル(toml)の取扱クラス
 
-issue:  
-* ファイルの有無による動作を定義できるようにしたい。
-    * ファイルなしを許容するなら、デフォルト値を定義
-    * ファイルなしを許容しないなら、その場で例外スロー
-* globalな設定を前提とするため、singltonな形式で提供したい。
-* validaterの実装が必要。
-"""
+    issue:  
+    * ファイルの有無による動作を定義できるようにしたい。
+        * ファイルなしを許容するなら、デフォルト値を定義
+        * ファイルなしを許容しないなら、その場で例外スロー
+    * globalな設定を前提とするため、singltonな形式で提供したい。
+    * validaterの実装が必要。
+    """
 
     def __init__(self, settings_path:str=None):
         """
