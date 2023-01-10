@@ -67,10 +67,15 @@ def exec_log(func_name: str):
             
             logger = logging.getLogger(func_name)
 
-            logger.info(f'***** {func_name} - 開始 *****')
-            result = func(*args, **keywords)
-            logger.info(f'***** {func_name} - 終了 *****')
-            
+            try:
+                logger.info(f'***** {func_name} - 開始 *****')
+
+                result = func(*args, **keywords)
+
+            finally:
+
+                logger.info(f'***** {func_name} - 終了 *****')
+                
             return result
 
         return _wrapper
