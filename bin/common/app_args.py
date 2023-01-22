@@ -1,26 +1,13 @@
 import functools
 from typing import Callable, TypeVar, Union
-from argparse import FileType, ArgumentParser
+from argparse import FileType, ArgumentParser, HelpFormatter
 
 _T = TypeVar("_T")
 
 class AppArgs():
 
-    # argument 定義の委譲先
-    __parser = ArgumentParser()
-
-    def __init__(self) -> None:
-        """
-        インスタンスの初期化
-        """
-        self.args = {}
-
-    def load_args(self) -> None:
-        self.args = AppArgs.__parser.parse_args()
-    
-    @property
-    def args(self) -> dict:
-        return self.args
+    # argument 設定リスト
+    __arg_configs = []
 
     @classmethod
     def get_arg_name(cls, name: str, is_option: bool) -> str:
@@ -73,13 +60,12 @@ class AppArgs():
 
         def _argument(func):
 
-            # 起動引数の追加
-            # > デコレーター対処のfucntion名を
-            # > 引数名として指定。
-            cls.__parser.add_argument(
-                cls.get_arg_name(func.__name__, is_optional), 
-                type=type, 
-                help=help,
+            cls.__arg_configs.append(
+                {
+                    "name":cls.get_arg_name(func.__name__, is_optional), 
+                    "type":type, 
+                    "help":help
+                }
             )
 
             @functools.wraps(func)
@@ -91,3 +77,62 @@ class AppArgs():
 
         return _argument
 
+    def __init__(self) -> None:
+        """
+        インスタンスの初期化
+        """
+        for arg_item in type(self).__arg_configs:
+            
+            # パラメタの追加
+            self._parser.add_argument(
+                arg_item["name"], 
+                type=arg_item["type"], 
+                help=arg_item["help"],
+            )
+
+        # argument のパース実行
+        self.__args = self._parse()
+
+    @property
+    def _parser(self) -> ArgumentParser:
+        """
+        ArgumentParser を返す。
+        ArgumentParserは、本プロパティを利用することで、遅延生成する。
+        
+        Returns:
+            ArgumentParser: arugumentのパース結果用の ArgumentParser
+        """
+        if not hasattr(self, "_AppArgs__argParser"):
+           self.__argParser = self._setup_perser()
+
+        return self.__argParser
+
+    @property
+    def args(self) -> dict:
+        """
+        argument の パース結果
+
+        Returns:
+            argparse.Namespace: arugumentのパース結果。
+        """
+        return self.__args 
+
+    def _setup_perser(self) -> ArgumentParser:
+        """
+        ArgumentParserを生成して返す。
+        ヘルパメッセージなどの カスタマイズが必要な場合は、
+        本メソッドをオーバーライドして、カスタマイズする。
+
+        Returns:
+            ArgumentParser: 生成した ArgumentParser
+        """
+        return ArgumentParser()  
+
+    def _parse(self) -> dict:
+        """
+        ArgumentParser.parse_args の 結果を返す。
+
+        Returns:
+            argparse.Namespace: arugumentのパース結果。
+        """
+        return self._parser.parse_args()
