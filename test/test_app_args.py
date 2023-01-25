@@ -79,3 +79,6 @@ def test__init__():
         test_target = AppArgs()
         assert test_target.args.the_prop == 'test'
 
+    # issue:
+    # 引数の異常ケースの検証方法が見当たらない。
+    # 検証方法がわかったら検証コードを追加する。
