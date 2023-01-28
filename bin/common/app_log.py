@@ -13,7 +13,55 @@
 #-------------------------------------------
 
 import functools
+import sys
+import json
+import __main__
+from logging import (
+    getLogger
+    , Formatter
+    , StreamHandler
+    , DEBUG
+)
 import logging
+
+class AppLogger():
+
+
+    def create_default(self):
+
+        logger = getLogger(__name__)
+        logger.setLevel(DEBUG)
+
+        formatter = Formatter(  
+            fmt='%(asctime)s > %(name)s [%(levelname)s] %(module)s > %(message)s'
+        )
+
+        handler = StreamHandler(sys.stderr)
+        handler.setLevel(DEBUG)
+        handler.setFormatter(formatter)
+        
+        logger.addHandler(handler)
+
+        return logger
+
+    def create_from_file(path: str):
+
+        with open(path, 'rt') as f:
+            config = json.load(f)
+            logging.config.dictConfig(config)
+        
+        logger = getLogger()
+
+        return logger
+
+    def getLogger():
+        pass
+        # TBD
+
+    def __init__(self) -> None:
+        pass
+
+
 
 def entry_log(prog_name:str):
     """バッチエントリーポイントでの実行ログ
@@ -81,3 +129,4 @@ def exec_log(func_name: str):
         return _wrapper
 
     return _exec_log
+
