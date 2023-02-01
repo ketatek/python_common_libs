@@ -1,0 +1,42 @@
+{
+	"version": 1,
+	"root": {
+		"level": "DEBUG"
+	},
+	"loggers": {
+		"app_logger": {
+			"level": "DEBUG",
+			"handlers": [
+				"exec_log"
+				, "exec_log_file"
+				, "trace_logfile"
+			]
+		}
+	},  
+	"handlers": {
+		"exec_log": {
+			"class": "logging.StreamHandler",
+			"level": "INFO",
+			"formatter": "default"
+		}
+		, "exec_log_file": {
+			"class": "logging.FileHandler",
+			"level": "INFO",
+			"filename":"exec.log",
+			"formatter": "default"
+		}
+		, "trace_logfile": {
+			"class": "logging.FileHandler",
+			"level": "DEBUG",
+			"filename":"trace.log",
+			"formatter": "default"
+		}
+	},
+	"formatters": {
+		"default": {
+			"class": "logging.Formatter",
+			"format": "%(asctime)s %(name)-15s %(levelname)-13s %(message)s",
+			"datefmt": "%Y-%m-%d %H:%M:%S"
+		}
+	}
+}
