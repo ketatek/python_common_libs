@@ -4,7 +4,6 @@
 # ログ出力関連のクラス や デコレーターを実装
 # 
 # * issue:
-#   * ログの書式を別途定義できるようにする。
 #   * 今のところエントリーポイントと、サブモジュールは、  
 #   ログ出力フローに違いがないので、書式の問題を切り離せるなら、  
 #   単一のデコレーターにまとめたい。  
@@ -26,10 +25,18 @@ import logging
 
 class AppLogger():
 
+    __default_logger = None
 
-    def create_default(self):
+    __logger = None
 
-        logger = getLogger(__name__)
+    @classmethod
+    def get_default(cls, self):
+
+        if cls.__default_logger is None:
+            return cls.__default_logger
+
+        cls.__default_logger = getLogger(__name__)
+        logger = cls.__default_logger
         logger.setLevel(DEBUG)
 
         formatter = Formatter(  
@@ -43,7 +50,8 @@ class AppLogger():
         logger.addHandler(handler)
 
         return logger
-
+    
+    @classmethod
     def create_from_file(path: str):
 
         with open(path, 'rt') as f:
@@ -55,13 +63,20 @@ class AppLogger():
         return logger
 
     def getLogger():
-        pass
-        # TBD
+        
+        # 設定ファイル未読込済みなら、設定ファイルの記載の
+        # ロギング設定ファイルを読込
+        # if AppSettings.log_setting_path is None:
+        #     return __class__.get_default()
 
-    def __init__(self) -> None:
-        pass
+        if __class__.__logger is not None:
+            return __class__.__logger
 
+        __class__.__logger = __class__.create_from_file()
+        if __class__.__logger is None:
+            __class__.__logger = __class__.get_default()
 
+        return __class__.__logger
 
 def entry_log(prog_name:str):
     """バッチエントリーポイントでの実行ログ
