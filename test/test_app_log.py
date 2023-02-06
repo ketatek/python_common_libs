@@ -6,6 +6,15 @@ from bin.common.app_log import (
     entry_log, exec_log
 )
 
+def test_get_default():
+    pass
+
+def test_create_from_file():
+    pass
+
+def test_get_logger():
+    pass
+
 def test_entry_log(caplog):
     """common.app_log.entry_log デコレーターのテスト
 
