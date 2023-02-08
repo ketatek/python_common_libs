@@ -39,8 +39,47 @@ def test_get_default(caplog):
         if level == FATAL:
             assert re.match((pattern_fmt % ('FATAL', 'debug')), message)
 
-def test_create_from_file():
-    pass
+def test_create_from_file(caplog):
+    """
+    loggin.jsonの設定をもとに、生成するロガーの
+    出力内容の検証。
+
+    isuue:
+        3種類のハンドラで出力された内容をチェックしたい。
+
+    Args:
+        caplog (_type_): _description_
+    """
+
+    logger = AppLogger.create_from_file("./config/logging.json")
+
+    # ログ出力
+    logger.debug('debaug メッセージ')
+    logger.info('info メッセージ')
+    logger.warning('warning メッセージ')
+    logger.error('error メッセージ')
+    logger.fatal('fatal メッセージ')
+
+    pattern_fmt = '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} > app_log \[%s\] %s > %s メッセージ'
+    for item in caplog.record_tuples:
+        name, level, message = item
+
+        assert 'app_log' == name
+
+        if level == DEBUG:
+            assert re.match((pattern_fmt % ('DEBUG', 'debug')), message)
+
+        if level == INFO:
+            assert re.match((pattern_fmt % ('INFO', 'info')), message)
+
+        if level == WARNING:
+            assert re.match((pattern_fmt % ('WARNING', 'warning')), message)
+
+        if level == ERROR:
+            assert re.match((pattern_fmt % ('ERROR', 'error')), message)
+
+        if level == FATAL:
+            assert re.match((pattern_fmt % ('FATAL', 'debug')), message)
 
 def test_get_logger():
     pass
