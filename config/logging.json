@@ -4,7 +4,7 @@
 		"level": "DEBUG"
 	},
 	"loggers": {
-		"app_logger": {
+		"app_log": {
 			"level": "DEBUG",
 			"handlers": [
 				"exec_log"

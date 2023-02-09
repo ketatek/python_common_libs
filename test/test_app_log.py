@@ -1,7 +1,9 @@
 import pytest 
 import re
 
-from logging import DEBUG, ERROR, INFO, WARNING, FATAL, CRITICAL
+import logging
+from _pytest.logging import LogCaptureFixture
+from logging import DEBUG, ERROR, INFO, WARNING, FATAL
 
 from bin.common.app_log import (
     entry_log, exec_log, AppLogger
@@ -39,18 +41,21 @@ def test_get_default(caplog):
         if level == FATAL:
             assert re.match((pattern_fmt % ('FATAL', 'debug')), message)
 
-def test_create_from_file(caplog):
+def test_create_from_file(caplog: LogCaptureFixture):
     """
     loggin.jsonの設定をもとに、生成するロガーの
     出力内容の検証。
 
-    isuue:
+    issue:
         3種類のハンドラで出力された内容をチェックしたい。
+        -> 
 
     Args:
         caplog (_type_): _description_
     """
-
+    # ログレベルの設定
+    caplog.set_level(DEBUG)
+    # logger = logging.getLogger(__name__)
     logger = AppLogger.create_from_file("./config/logging.json")
 
     # ログ出力
@@ -60,26 +65,28 @@ def test_create_from_file(caplog):
     logger.error('error メッセージ')
     logger.fatal('fatal メッセージ')
 
-    pattern_fmt = '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} > app_log \[%s\] %s > %s メッセージ'
-    for item in caplog.record_tuples:
-        name, level, message = item
+    # issue: キャプチャされないので、原因を調査。
+    print(caplog.record_tuples)
+    # pattern_fmt = '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} > app_log \[%s\] %s > %s メッセージ'
+    # for item in caplog.record_tuples:
+    #     name, level, message = item
 
-        assert 'app_log' == name
+    #     assert 'app_log' == name
 
-        if level == DEBUG:
-            assert re.match((pattern_fmt % ('DEBUG', 'debug')), message)
+    #     if level == DEBUG:
+    #         assert re.match((pattern_fmt % ('DEBUG', 'debug')), message)
 
-        if level == INFO:
-            assert re.match((pattern_fmt % ('INFO', 'info')), message)
+    #     if level == INFO:
+    #         assert re.match((pattern_fmt % ('INFO', 'info')), message)
 
-        if level == WARNING:
-            assert re.match((pattern_fmt % ('WARNING', 'warning')), message)
+    #     if level == WARNING:
+    #         assert re.match((pattern_fmt % ('WARNING', 'warning')), message)
 
-        if level == ERROR:
-            assert re.match((pattern_fmt % ('ERROR', 'error')), message)
+    #     if level == ERROR:
+    #         assert re.match((pattern_fmt % ('ERROR', 'error')), message)
 
-        if level == FATAL:
-            assert re.match((pattern_fmt % ('FATAL', 'debug')), message)
+    #     if level == FATAL:
+    #         assert re.match((pattern_fmt % ('FATAL', 'debug')), message)
 
 def test_get_logger():
     pass

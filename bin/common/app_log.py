@@ -22,6 +22,7 @@ from logging import (
     , DEBUG
 )
 import logging
+import logging.config
 
 class AppLogger():
 
@@ -82,7 +83,7 @@ class AppLogger():
             config = json.load(f)
             logging.config.dictConfig(config)
         
-        logger = getLogger()
+        logger = getLogger("app_log")
 
         return logger
 
