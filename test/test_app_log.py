@@ -10,7 +10,24 @@ from bin.common.app_log import (
 )
 
 def test_get_default(caplog):
+    """
+    デフォルトロガーによるログインの検証コード
+
+    issue:
+        _pytest.logging のコードを確認したが、結果としてroot loggerが、
+        キャプチャの対象となっているため、子ロガーの検証はできない模様。
+        LogCaptureFixture での検証をあきらめるか、
+        実装方法を再検討するか検討する。
+
+        [ _pytest.logging ]
+        https://docs.pytest.org/en/7.1.x/_modules/_pytest/logging.html#LogCaptureFixture
+
+    Args:
+        caplog (_type_): _description_
+    """
     
+    caplog.set_level(DEBUG, "app_log")
+
     logger = AppLogger.get_default()
     
     # ログ出力
@@ -27,6 +44,7 @@ def test_get_default(caplog):
         assert 'app_log' == name
 
         if level == DEBUG:
+            result = re.match((pattern_fmt % ('DEBUG', 'debug')), message)
             assert re.match((pattern_fmt % ('DEBUG', 'debug')), message)
 
         if level == INFO:
@@ -48,7 +66,7 @@ def test_create_from_file(caplog: LogCaptureFixture):
 
     issue:
         3種類のハンドラで出力された内容をチェックしたい。
-        -> 
+        -> 子ロガーの検証ができないので、実装/検証方法を含め検討する。 
 
     Args:
         caplog (_type_): _description_
@@ -66,6 +84,8 @@ def test_create_from_file(caplog: LogCaptureFixture):
     logger.fatal('fatal メッセージ')
 
     # issue: キャプチャされないので、原因を調査。
+    # dictConfigを利用していることが原因の模様。調査を進める。
+
     print(caplog.record_tuples)
     # pattern_fmt = '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} > app_log \[%s\] %s > %s メッセージ'
     # for item in caplog.record_tuples:

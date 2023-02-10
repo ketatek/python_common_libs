@@ -15,6 +15,7 @@ import functools
 import sys
 import json
 import __main__
+from pathlib import Path
 from logging import (
     getLogger
     , Formatter
@@ -24,11 +25,16 @@ from logging import (
 import logging
 import logging.config
 
+
 class AppLogger():
 
     __default_logger = None
 
     __logger = None
+
+    @classmethod
+    def __get_logger_name(cls) -> str:
+        return Path(__file__).stem
 
     @classmethod
     def get_default(cls):
@@ -45,11 +51,11 @@ class AppLogger():
         """
 
         # デフォルトロガーがすでにあれば、それを返す。
-        if cls.__default_logger is None:
+        if cls.__default_logger is not None:
             return cls.__default_logger
 
         # デフォルトロガーの生成
-        cls.__default_logger = getLogger(__name__)
+        cls.__default_logger = getLogger(cls.__get_logger_name())
         logger = cls.__default_logger
 
         # デバッグレベルに設定
